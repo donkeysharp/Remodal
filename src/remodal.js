@@ -70,7 +70,8 @@
     closeOnCancel: true,
     closeOnEscape: true,
     closeOnOutsideClick: true,
-    modifier: ''
+    modifier: '',
+    wrapper: $('<div>')
   }, global.REMODAL_GLOBALS && global.REMODAL_GLOBALS.DEFAULTS);
 
   /**
@@ -520,14 +521,20 @@
         namespacify('is', STATES.CLOSED))
       .attr('tabindex', '-1');
 
-    remodal.$wrapper = $('<div>')
+    // In case there is a set wrapper on defaults, use that instead
+    // of creating a new one. This avoid DOM mutation when using
+    // Remodal with React
+    remodal.$wrapper = options.wrapper
       .addClass(
         namespacify('wrapper') + ' ' +
         remodal.settings.modifier + ' ' +
         namespacify('is', STATES.CLOSED))
       .hide()
       .append(remodal.$modal);
-    $body.append(remodal.$wrapper);
+    // If wrapper isn't defined mutate DOM
+    if (!options.wrapper) {
+      $body.append(remodal.$wrapper);
+    }
 
     // Add the event listener for the close button
     remodal.$wrapper.on('click.' + NAMESPACE, '[data-' + PLUGIN_NAME + '-action="close"]', function(e) {
